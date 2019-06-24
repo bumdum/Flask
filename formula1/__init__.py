@@ -2,6 +2,7 @@ from flask import Flask
 import os
 from . import db
 from . import season
+from . import api
 
 def create_app(test_config=None):
     # create and configure the app

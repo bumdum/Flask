@@ -20,8 +20,12 @@ body {
 </style>
 <h1 id="raceName"></h1>
 <div></div>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  crossorigin="anonymous"></script>
 <script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  //$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
   var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
   var current_race;
@@ -95,12 +99,17 @@ function tick() {
       .each('end', function(d){ 
         if(d.previousValue === 0)
         {
-          getCurrentRace();
-          d.raceName = raceNames[r];
-          r++;
-          if(r >= 21)
+          if(d.index === .7)
           {
-            r = 0;
+            //getCurrentRace();
+            d.raceName = raceNames[r];
+            console.log(r + " index: " + d.index);
+            document.getElementById("raceName").innerHTML =  raceNames[r];
+            r++;
+            if(r >= 21)
+            {
+              r = 0;
+            }
           }
         }
       });
@@ -174,8 +183,8 @@ switch(arrayNumber) {
       {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
       {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
       {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, raceName: 57},
-      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, raceName: 20},
+      {index: .4, text: '2nd ', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Sam', value: now.getSeconds() / 60, raceName: 20},
     ];
     break;
   case 3:
