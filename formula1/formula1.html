@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  /*background: #222;*/
+  margin: auto;
+  width: 960px;
+}
+
+.arc-text {
+  font: 16px sans-serif;
+}
+
+.arc-center {
+  fill: none;
+}
+
+
+</style>
+<div></div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var width = 960,
+    height = 400,
+    radius = Math.min(width, height) / 1.9,
+    spacing = .09,
+    arrayNumber = 1,
+    t = 1;
+
+var formatSecond = d3.time.format("%-S seconds"),
+    formatMinute = d3.time.format("%-M minutes"),
+    formatHour = d3.time.format("%-H hours"),
+    formatDay = d3.time.format("%A"),
+    formatDate = function(d) { d = d.getDate(); switch (10 <= d && d <= 19 ? 10 : d % 10) { case 1: d += "st"; break; case 2: d += "nd"; break; case 3: d += "rd"; break; default: d += "th"; break; } return d; },
+    formatMonth = d3.time.format("%B");
+
+var color = d3.scale.linear()
+    .range(["hsl(-180,60%,50%)", "hsl(180,60%,50%)"])
+    .interpolate(function(a, b) { var i = d3.interpolateString(a, b); return function(t) { return d3.hsl(i(t)); }; });
+
+var arcBody = d3.svg.arc()
+    .startAngle(0)
+    .endAngle(function(d) { return d.value * 2 * Math.PI; })
+    .innerRadius(function(d) { return d.index * radius; })
+    .outerRadius(function(d) { return (d.index + spacing) * radius; })
+    .cornerRadius(6);
+
+var arcCenter = d3.svg.arc()
+    .startAngle(0)
+    .endAngle(function(d) { return d.value * 2 * Math.PI; })
+    .innerRadius(function(d) { return (d.index + spacing / 2) * radius; })
+    .outerRadius(function(d) { return (d.index + spacing / 2) * radius; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+var field = svg.selectAll("g")
+    .data(fields)
+  .enter().append("g").text(function() { return "My color is "; });
+
+field.append("path")
+    .attr("class", "arc-body");
+
+field.append("path")
+    .attr("id", function(d, i) { return "arc-center-" + i; })
+    .attr("class", "arc-center");
+
+field.append("text")
+    .attr("dy", ".35em")
+    .attr("dx", ".75em")
+    .style("text-anchor", "start")
+  .append("textPath")
+    .attr("startOffset", "50%")
+    .attr("class", "arc-text")
+    .attr("xlink:href", function(d, i) { return "#arc-center-" + i; });
+
+tick();
+
+d3.select(self.frameElement).style("height", height + "px");
+
+function tick() {
+  t = t + 1;
+  if(t < 60){}
+  else {
+    t = 1;
+    arrayNumber = arrayNumber + 1
+  }
+  if (!document.hidden) field
+      .each(function(d) { this._value = d.value; })
+      .data(fields)
+      .each(function(d) { d.previousValue = this._value;})
+    .transition()
+      .ease("elastic")
+      .duration(500)
+      .each(fieldTransition);
+
+  setTimeout(tick, 1000 - Date.now() % 1000);
+}
+
+function fieldTransition() {
+  var field = d3.select(this).transition();
+
+  field.select(".arc-body")
+      .attrTween("d", arcTween(arcBody))
+      .style("fill", function(d) { return color(d.value); });
+
+  field.select(".arc-center")
+      .attrTween("d", arcTween(arcCenter));
+
+  field.select(".arc-text")
+      .text(function(d) { return d.text; });
+}
+
+function arcTween(arc) {
+  return function(d) {
+    var i = d3.interpolateNumber(d.previousValue, d.value);
+    return function(t) {
+      d.value = i(t);
+      return arc(d);
+    };
+  };
+}
+
+function fields() {
+  var now = new Date;
+
+  switch(arrayNumber) {
+  case 1:
+    return [
+    {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
+    {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
+    {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
+    {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, color: 57},
+    {index: .3, text: '1st Steven', value: now.getSeconds() / 60, color: 20},
+  ];
+    break;
+  case 2:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
+      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, color: 57},
+      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, color: 20},
+    ];
+    break;
+  case 3:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, color: 57},
+      {index: .3, text: '1st Alpha', value: now.getSeconds() / 60, color: 20},
+    ];
+    break;
+  case 4:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, color: 57},
+      {index: .3, text: '1st Omega', value: now.getSeconds() / 60, color: 20},
+    ];
+    break;
+  default:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
+      {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, color: 57},
+      {index: .3, text: '1st Steven', value: now.getSeconds() / 60, color: 20},
+    ];
+} 
+}
+
+</script>
