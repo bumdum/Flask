@@ -24,6 +24,7 @@ body {
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
   var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
+  var current_race;
 </script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -31,8 +32,7 @@ var width = 960,
     height = 600,
     radius = Math.min(width, height) / 1.9,
     spacing = .09,
-    arrayNumber = 1,
-    t = 1;
+    r = 0;
 
 var color = d3.scale.linear()
     .range(["hsl(-180,60%,50%)", "hsl(180,60%,50%)"])
@@ -95,7 +95,13 @@ function tick() {
       .each('end', function(d){ 
         if(d.previousValue === 0)
         {
-          d.raceName = "Grand";
+          getCurrentRace();
+          d.raceName = raceNames[r];
+          r++;
+          if(r >= 21)
+          {
+            r = 0;
+          }
         }
       });
 
@@ -127,17 +133,16 @@ function arcTween(arc) {
   };
 }
 
+function getCurrentRace() {
+  $.getJSON($SCRIPT_ROOT + '/get_race', {
+        a: raceids[r]
+      }, function(data) {
+        current_race = data;
+      });
+}
+
 function fields() {
   var now = new Date;
-  var race;
-
-  $.getJSON($SCRIPT_ROOT + '/get_races', {
-        a: $('input[name="a"]').val(),
-        b: $('input[name="b"]').val()
-      }, function(data) {
-        $("#result").text(data.result);
-      });
-
   switch(arrayNumber) {
   case 1:
     return [
