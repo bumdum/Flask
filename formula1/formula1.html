@@ -18,7 +18,13 @@ body {
 
 
 </style>
+<h1 id="raceName"></h1>
 <div></div>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
+  var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
+</script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 var width = 960,
@@ -54,7 +60,7 @@ var svg = d3.select("body").append("svg")
 
 var field = svg.selectAll("g")
     .data(fields)
-  .enter().append("g").text(function() { return "My color is "; });
+  .enter().append("g");
 
 field.append("path")
     .attr("class", "arc-body");
@@ -77,12 +83,7 @@ tick();
 d3.select(self.frameElement).style("height", height + "px");
 
 function tick() {
-  t = t + 1;
-  if(t < 60){}
-  else {
-    t = 1;
-    arrayNumber = arrayNumber + 1
-  }
+
   if (!document.hidden) field
       .each(function(d) { this._value = d.value; })
       .data(fields)
@@ -90,7 +91,13 @@ function tick() {
     .transition()
       .ease("elastic")
       .duration(500)
-      .each(fieldTransition);
+      .each(fieldTransition)
+      .each('end', function(d){ 
+        if(d.previousValue === 0)
+        {
+          d.raceName = "Grand";
+        }
+      });
 
   setTimeout(tick, 1000 - Date.now() % 1000);
 }
@@ -112,6 +119,7 @@ function fieldTransition() {
 function arcTween(arc) {
   return function(d) {
     var i = d3.interpolateNumber(d.previousValue, d.value);
+
     return function(t) {
       d.value = i(t);
       return arc(d);
@@ -121,51 +129,59 @@ function arcTween(arc) {
 
 function fields() {
   var now = new Date;
+  var race;
+
+  $.getJSON($SCRIPT_ROOT + '/get_races', {
+        a: $('input[name="a"]').val(),
+        b: $('input[name="b"]').val()
+      }, function(data) {
+        $("#result").text(data.result);
+      });
 
   switch(arrayNumber) {
   case 1:
     return [
-    {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
-    {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
-    {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
-    {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, color: 57},
-    {index: .3, text: '1st Steven', value: now.getSeconds() / 60, color: 20},
+    {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+    {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+    {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+    {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
+    {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
   ];
     break;
   case 2:
     return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
-      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, color: 57},
-      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, color: 20},
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, raceName: 20},
     ];
     break;
   case 3:
     return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
-      {index: .4, text: '2nd', value: now.getSeconds() / 61, color: 57},
-      {index: .3, text: '1st Alpha', value: now.getSeconds() / 60, color: 20},
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Alpha', value: now.getSeconds() / 60, raceName: 20},
     ];
     break;
   case 4:
     return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
-      {index: .4, text: '2nd', value: now.getSeconds() / 61, color: 57},
-      {index: .3, text: '1st Omega', value: now.getSeconds() / 60, color: 20},
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Omega', value: now.getSeconds() / 60, raceName: 20},
     ];
     break;
   default:
     return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, color: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, color: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, color: 3},
-      {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, color: 57},
-      {index: .3, text: '1st Steven', value: now.getSeconds() / 60, color: 20},
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
     ];
 } 
 }
