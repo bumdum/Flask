@@ -7,7 +7,7 @@ from flask import (
 
 from formula1.db import get_db
 
-bp = Blueprint('api', __name__, url_prefix='/api')
+api_bp = Blueprint('api', __name__, url_prefix='/api')
 
 @app.route('/get_race')
 def get_races():

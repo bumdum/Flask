@@ -25,6 +25,8 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
+    app.register_blueprint(api_bp)
     app.register_blueprint(season_bp)
+    
 
     return app

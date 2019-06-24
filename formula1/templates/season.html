@@ -3,7 +3,7 @@
 <style>
 
 body {
-  background: #222;
+  /*background: #222;*/
   margin: auto;
   width: 960px;
 }
@@ -16,34 +16,23 @@ body {
   fill: none;
 }
 
-#credit {
-  position: absolute;
-  font: 10px sans-serif;
-  right: 10px;
-  bottom: 10px;
-  color: #ddd;
-}
-
-#credit a {
-  color: inherit;
-}
 
 </style>
-<div id="credit">Inspired by <a href="http://blog.pixelbreaker.com/polarclock/">pixelbreaker</a>.</div>
+<h1 id="raceName"></h1>
+<div></div>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
+  var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
+  var current_race;
+</script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-
 var width = 960,
-    height = 800,
+    height = 600,
     radius = Math.min(width, height) / 1.9,
-    spacing = .09;
-
-var formatSecond = d3.time.format("%-S seconds"),
-    formatMinute = d3.time.format("%-M minutes"),
-    formatHour = d3.time.format("%-H hours"),
-    formatDay = d3.time.format("%A"),
-    formatDate = function(d) { d = d.getDate(); switch (10 <= d && d <= 19 ? 10 : d % 10) { case 1: d += "st"; break; case 2: d += "nd"; break; case 3: d += "rd"; break; default: d += "th"; break; } return d; },
-    formatMonth = d3.time.format("%B");
+    spacing = .09,
+    r = 0;
 
 var color = d3.scale.linear()
     .range(["hsl(-180,60%,50%)", "hsl(180,60%,50%)"])
@@ -65,6 +54,7 @@ var arcCenter = d3.svg.arc()
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
+    .attr("viewBox", `0 0 `+ height + ` ` + width)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -93,14 +83,27 @@ tick();
 d3.select(self.frameElement).style("height", height + "px");
 
 function tick() {
+
   if (!document.hidden) field
       .each(function(d) { this._value = d.value; })
       .data(fields)
-      .each(function(d) { d.previousValue = this._value; })
+      .each(function(d) { d.previousValue = this._value;})
     .transition()
       .ease("elastic")
       .duration(500)
-      .each(fieldTransition);
+      .each(fieldTransition)
+      .each('end', function(d){ 
+        if(d.previousValue === 0)
+        {
+          getCurrentRace();
+          d.raceName = raceNames[r];
+          r++;
+          if(r >= 21)
+          {
+            r = 0;
+          }
+        }
+      });
 
   setTimeout(tick, 1000 - Date.now() % 1000);
 }
@@ -122,6 +125,7 @@ function fieldTransition() {
 function arcTween(arc) {
   return function(d) {
     var i = d3.interpolateNumber(d.previousValue, d.value);
+
     return function(t) {
       d.value = i(t);
       return arc(d);
@@ -129,16 +133,77 @@ function arcTween(arc) {
   };
 }
 
+function getCurrentRace() {
+  $.getJSON($SCRIPT_ROOT + '/api/get_race', {
+        a: raceids[r]
+      }, function(data) {
+        current_race = data;
+      });
+}
+
 function fields() {
   var now = new Date;
+
+  if(current_race)
+  {
+    console.log(current_race);
+  }
+
   return [
-    {index: .7, text: formatSecond(now), value: now.getSeconds() / 60},
-    {index: .6, text: formatMinute(now), value: now.getMinutes() / 60},
-    {index: .5, text: formatHour(now),   value: now.getHours() / 24},
-    {index: .3, text: formatDay(now),    value: now.getDay() / 7},
-    {index: .2, text: formatDate(now),   value: (now.getDate() - 1) / (32 - new Date(now.getYear(), now.getMonth(), 32).getDate())},
-    {index: .1, text: formatMonth(now),  value: now.getMonth() / 12}
+    {index: .7, text: '5th ', value: now.getSeconds() / 80, raceName: 230},
+    {index: .6, text: '4th ', value: now.getSeconds() / 75, raceName: 30}, 
+    {index: .5, text: '3rd ', value: now.getSeconds() / 70, raceName: 3},
+    {index: .4, text: '2nd ', value: now.getSeconds() / 65, raceName: 57},
+    {index: .3, text: '1st ', value: now.getSeconds() / 60, raceName: 20},
   ];
 }
 
+/*
+switch(arrayNumber) {
+  case 1:
+    return [
+    {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+    {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+    {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+    {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
+    {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
+  ];
+    break;
+  case 2:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, raceName: 20},
+    ];
+    break;
+  case 3:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Alpha', value: now.getSeconds() / 60, raceName: 20},
+    ];
+    break;
+  case 4:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Omega', value: now.getSeconds() / 60, raceName: 20},
+    ];
+    break;
+  default:
+    return [
+      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
+      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
+      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
+      {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
+      {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
+    ];
+} 
+*/
 </script>
