@@ -3,7 +3,7 @@
 <style>
 
 body {
-  /*background: #222;*/
+  background: #222;
   margin: auto;
   width: 960px;
 }
@@ -16,20 +16,41 @@ body {
   fill: none;
 }
 
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 
 </style>
-<h1 id="raceName"></h1>
-<div></div>
+<div>
+  <h1 id="raceName" style="font-family:sans-serif;color:whitesmoke;"></h1>
+  <div id="container" class="svg-container"></div>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  crossorigin="anonymous"></script>
 <script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  //$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
   var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
   var current_race;
 </script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-var width = 960,
-    height = 600,
+var width = 300,
+    height = 300,
     radius = Math.min(width, height) / 1.9,
     spacing = .09,
     r = 0;
@@ -51,10 +72,13 @@ var arcCenter = d3.svg.arc()
     .innerRadius(function(d) { return (d.index + spacing / 2) * radius; })
     .outerRadius(function(d) { return (d.index + spacing / 2) * radius; });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("div#container").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("viewBox", `0 0 `+ height + ` ` + width)
+    //.attr("viewBox", `0 0 `+ height + ` ` + width)
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 300 300")
+    .classed("svg-content", true)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -95,12 +119,17 @@ function tick() {
       .each('end', function(d){ 
         if(d.previousValue === 0)
         {
-          getCurrentRace();
-          d.raceName = raceNames[r];
-          r++;
-          if(r >= 21)
+          if(d.index === .7)
           {
-            r = 0;
+            //getCurrentRace();
+            d.raceName = raceNames[r];
+            console.log(r + " index: " + d.index);
+            document.getElementById("raceName").innerHTML =  raceNames[r];
+            r++;
+            if(r >= 21)
+            {
+              r = 0;
+            }
           }
         }
       });
@@ -150,60 +179,12 @@ function fields() {
   }
 
   return [
-    {index: .7, text: '5th ', value: now.getSeconds() / 80, raceName: 230},
-    {index: .6, text: '4th ', value: now.getSeconds() / 75, raceName: 30}, 
-    {index: .5, text: '3rd ', value: now.getSeconds() / 70, raceName: 3},
-    {index: .4, text: '2nd ', value: now.getSeconds() / 65, raceName: 57},
-    {index: .3, text: '1st ', value: now.getSeconds() / 60, raceName: 20},
+    {index: .8, text: '5th ', value: now.getSeconds() / 32, raceName: 230},
+    {index: .7, text: '4th ', value: now.getSeconds() / 29, raceName: 30}, 
+    {index: .6, text: '3rd ', value: now.getSeconds() / 26, raceName: 3},
+    {index: .5, text: '2nd ', value: now.getSeconds() / 23, raceName: 57},
+    {index: .4, text: '1st ', value: now.getSeconds() / 20, raceName: 20},
   ];
 }
 
-/*
-switch(arrayNumber) {
-  case 1:
-    return [
-    {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
-    {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
-    {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-    {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
-    {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
-  ];
-    break;
-  case 2:
-    return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-      {index: .4, text: '2nd noriis', value: now.getSeconds() / 61, raceName: 57},
-      {index: .3, text: '1st chuck', value: now.getSeconds() / 60, raceName: 20},
-    ];
-    break;
-  case 3:
-    return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
-      {index: .3, text: '1st Alpha', value: now.getSeconds() / 60, raceName: 20},
-    ];
-    break;
-  case 4:
-    return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-      {index: .4, text: '2nd', value: now.getSeconds() / 61, raceName: 57},
-      {index: .3, text: '1st Omega', value: now.getSeconds() / 60, raceName: 20},
-    ];
-    break;
-  default:
-    return [
-      {index: .7, text: '5th', value: now.getSeconds() / 80, raceName: 230},
-      {index: .6, text: '4th', value: now.getSeconds() / 70, raceName: 30}, 
-      {index: .5, text: '3rd', value: now.getSeconds() / 62, raceName: 3},
-      {index: .4, text: '2nd Mario', value: now.getSeconds() / 61, raceName: 57},
-      {index: .3, text: '1st Steven', value: now.getSeconds() / 60, raceName: 20},
-    ];
-} 
-*/
 </script>
