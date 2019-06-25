@@ -7,9 +7,8 @@ from flask import (
 
 from formula1.db import get_db
 
-season_bp = Blueprint('season', __name__, url_prefix='/season')
+bp = Blueprint('season', __name__, url_prefix='/season')
 
-@season_bp.route('/season', methods='GET')
+@bp.route('/')
 def season():
-
-    return render_template('season/season.html')
+    return render_template('season/races.html')

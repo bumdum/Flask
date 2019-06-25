@@ -26,8 +26,9 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-    app.register_blueprint(api_bp)
-    app.register_blueprint(season_bp)
+    app.register_blueprint(api.bp)
+    app.register_blueprint(season.bp)
+    app.add_url_rule('/', endpoint='season')
     
 
     return app

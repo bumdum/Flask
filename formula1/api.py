@@ -7,10 +7,10 @@ from flask import (
 
 from formula1.db import get_db
 
-api_bp = Blueprint('api', __name__, url_prefix='/api')
+bp = Blueprint('api', __name__, url_prefix='/api')
 
-@app.route('/get_race')
-def get_races():
+@bp.route('/get_race', methods=["GET"])
+def get_race():
     raceId = request.args.get('a', 0, type=int)
     db = get_db()
     error = None

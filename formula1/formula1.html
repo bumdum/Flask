@@ -12,14 +12,37 @@ body {
   font: 16px sans-serif;
 }
 
+h1 {
+  font: sans-serif;
+}
+
 .arc-center {
   fill: none;
 }
 
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
 
 </style>
-<h1 id="raceName"></h1>
-<div></div>
+<div>
+  <h1 id="raceName" style="font-family:sans-serif;"></h1>
+  <div id="container" class="svg-container"></div>
+</div>
+
 <script
   src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
   integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
@@ -32,8 +55,8 @@ body {
 </script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-var width = 960,
-    height = 600,
+var width = 300,
+    height = 300,
     radius = Math.min(width, height) / 1.9,
     spacing = .09,
     r = 0;
@@ -55,10 +78,13 @@ var arcCenter = d3.svg.arc()
     .innerRadius(function(d) { return (d.index + spacing / 2) * radius; })
     .outerRadius(function(d) { return (d.index + spacing / 2) * radius; });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("div#container").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("viewBox", `0 0 `+ height + ` ` + width)
+    //.attr("viewBox", `0 0 `+ height + ` ` + width)
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 300 300")
+    .classed("svg-content", true)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -159,11 +185,11 @@ function fields() {
   }
 
   return [
-    {index: .7, text: '5th ', value: now.getSeconds() / 80, raceName: 230},
-    {index: .6, text: '4th ', value: now.getSeconds() / 75, raceName: 30}, 
-    {index: .5, text: '3rd ', value: now.getSeconds() / 70, raceName: 3},
-    {index: .4, text: '2nd ', value: now.getSeconds() / 65, raceName: 57},
-    {index: .3, text: '1st ', value: now.getSeconds() / 60, raceName: 20},
+    {index: .7, text: '5th ', value: now.getSeconds() / 40, raceName: 230},
+    {index: .6, text: '4th ', value: now.getSeconds() / 35, raceName: 30}, 
+    {index: .5, text: '3rd ', value: now.getSeconds() / 30, raceName: 3},
+    {index: .4, text: '2nd ', value: now.getSeconds() / 25, raceName: 57},
+    {index: .3, text: '1st ', value: now.getSeconds() / 20, raceName: 20},
   ];
 }
 
