@@ -3,17 +3,13 @@
 <style>
 
 body {
-  /*background: #222;*/
+  background: #222;
   margin: auto;
   width: 960px;
 }
 
 .arc-text {
   font: 16px sans-serif;
-}
-
-h1 {
-  font: sans-serif;
 }
 
 .arc-center {
@@ -39,7 +35,7 @@ h1 {
 
 </style>
 <div>
-  <h1 id="raceName" style="font-family:sans-serif;"></h1>
+  <h1 id="raceName" style="font-family:sans-serif;color:whitesmoke;"></h1>
   <div id="container" class="svg-container"></div>
 </div>
 
@@ -185,11 +181,11 @@ function fields() {
   }
 
   return [
-    {index: .7, text: '5th ', value: now.getSeconds() / 40, raceName: 230},
-    {index: .6, text: '4th ', value: now.getSeconds() / 35, raceName: 30}, 
-    {index: .5, text: '3rd ', value: now.getSeconds() / 30, raceName: 3},
-    {index: .4, text: '2nd ', value: now.getSeconds() / 25, raceName: 57},
-    {index: .3, text: '1st ', value: now.getSeconds() / 20, raceName: 20},
+    {index: .8, text: '5th ', value: now.getSeconds() / 32, raceName: 230},
+    {index: .7, text: '4th ', value: now.getSeconds() / 29, raceName: 30}, 
+    {index: .6, text: '3rd ', value: now.getSeconds() / 26, raceName: 3},
+    {index: .5, text: '2nd ', value: now.getSeconds() / 23, raceName: 57},
+    {index: .4, text: '1st ', value: now.getSeconds() / 20, raceName: 20},
   ];
 }
 
