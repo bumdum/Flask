@@ -16,4 +16,7 @@ def races():
 
 @bp.route('/teams')
 def teams():
+    db = get_db()
+    error = None
+    results = db.execute('SELECT TOP(5) * FROM results WHERE raceId = ? ORDER BY rank', (raceId,)).fetchall()
     return render_template('graph/teams.html')
