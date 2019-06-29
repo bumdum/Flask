@@ -38,15 +38,9 @@ body {
 </div>
 
 <script
-  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-  crossorigin="anonymous"></script>
-<script type=text/javascript>
-  //$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  var raceNames = ['Australian Grand Prix','Bahrain Grand Prix','Chinese Grand Prix','Azerbaijan Grand Prix','Spanish Grand Prix','Monaco Grand Prix','Canadian Grand Prix','French Grand Prix','Austrian Grand Prix','British Grand Prix','German Grand Prix','Hungarian Grand Prix','Belgian Grand Prix','Italian Grand Prix','Singapore Grand Prix','Russian Grand Prix','Japanese Grand Prix','United States Grand Prix','Mexican Grand Prix','Brazilian Grand Prix','Abu Dhabi Grand Prix']
-  var raceids = [989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009];
-  var current_race;
-</script>
+			  src="https://code.jquery.com/jquery-3.4.1.min.js"
+			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			  crossorigin="anonymous"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 var width = 300,
@@ -54,6 +48,11 @@ var width = 300,
     radius = Math.min(width, height) / 1.9,
     spacing = .09,
     r = 0;
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+var races = {{ g.races|safe }};
+document.getElementById("raceName").innerHTML =  races[r].n;
+var topLaps; 
+getTopLaps();
 
 var color = d3.scale.linear()
     .range(["hsl(-180,60%,50%)", "hsl(180,60%,50%)"])
@@ -107,7 +106,7 @@ tick();
 d3.select(self.frameElement).style("height", height + "px");
 
 function tick() {
-
+  var l = 0;
   if (!document.hidden) field
       .each(function(d) { this._value = d.value; })
       .data(fields)
@@ -116,15 +115,24 @@ function tick() {
       .ease("elastic")
       .duration(500)
       .each(fieldTransition)
-      .each('end', function(d){ 
+      .each('end', function(d){
+        /*if(topLaps){
+          this._text = topLaps[l].n + " " + topLaps[l].t ;
+          console.log(d.index + " " + topLaps[l].n + " " + topLaps[l].t);
+          l++;
+          if(d.index === .8){
+            l = 0;
+          }
+        }*/
+          
         if(d.previousValue === 0)
         {
-          if(d.index === .7)
+          if(d.index === .8)
           {
-            //getCurrentRace();
-            d.raceName = raceNames[r];
             console.log(r + " index: " + d.index);
-            document.getElementById("raceName").innerHTML =  raceNames[r];
+            getTopLaps();
+            console.log("toplaps: " + topLaps);
+            document.getElementById("raceName").innerHTML =  races[r].n;
             r++;
             if(r >= 21)
             {
@@ -162,29 +170,37 @@ function arcTween(arc) {
   };
 }
 
-function getCurrentRace() {
-  $.getJSON($SCRIPT_ROOT + '/api/get_race', {
-        a: raceids[r]
+function getTopLaps() {
+  console.log("raceId: " + races[r].r);
+  $.getJSON($SCRIPT_ROOT + '/api/get_toplaps', {
+        a: races[r].r
       }, function(data) {
-        current_race = data;
-      });
+        topLaps = data;
+      })
+  .fail(function(e) {
+    console.log(e);
+  })
 }
 
 function fields() {
   var now = new Date;
+  var first, second, third, fourth, fifth;
 
-  if(current_race)
+  if(topLaps)
   {
-    console.log(current_race);
+    first = topLaps[0].n + " " + topLaps[0].t;
+    second = topLaps[1].n + " " + topLaps[1].t;
+    third = topLaps[2].n + " " + topLaps[2].t;
+    fourth = topLaps[3].n + " " + topLaps[3].t;
+    fifth = topLaps[4].n + " " + topLaps[4].t;
   }
 
   return [
-    {index: .8, text: '5th ', value: now.getSeconds() / 32},
-    {index: .7, text: '4th ', value: now.getSeconds() / 29}, 
-    {index: .6, text: '3rd ', value: now.getSeconds() / 26},
-    {index: .5, text: '2nd ', value: now.getSeconds() / 23},
-    {index: .4, text: '1st ', value: now.getSeconds() / 20},
+    {index: .8, text: '5th ' + fifth, value: now.getSeconds() / 32},
+    {index: .7, text: '4th ' + fourth, value: now.getSeconds() / 29}, 
+    {index: .6, text: '3rd ' + third, value: now.getSeconds() / 26},
+    {index: .5, text: '2nd ' + second, value: now.getSeconds() / 23},
+    {index: .4, text: '1st ' + first, value: now.getSeconds() / 20},
   ];
 }
-
 </script>
