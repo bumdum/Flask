@@ -21,5 +21,5 @@ def races():
 def teams():
     db = get_db()
     error = None
-    results = db.execute('SELECT * FROM results WHERE raceId = ? ORDER BY rank', (raceId,)).fetchall()
+    results = db.execute('SELECT * FROM results WHERE raceId = ? ORDER BY rank', (18,)).fetchall()
     return render_template('teams.html')
